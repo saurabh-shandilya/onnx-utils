@@ -64,6 +64,13 @@ def onnx_edit(input_model, output_model, new_input_node_names, input_shape_map, 
     if(verify):
         print("input model Errors: ", onnx.checker.check_model(model))
     
+    #Generate a name for all node if they have none.
+    nodeIdx = 0;
+    for n in graph.node:
+        if n.name == '':
+            n.name = str(n.op_type) + str(nodeIdx)
+            nodeIdx += 1
+    
     node_map = createGraphMemberMap(graph.node)
     input_map = createGraphMemberMap(graph.input)
     output_map = createGraphMemberMap(graph.output)
