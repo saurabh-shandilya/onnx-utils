@@ -92,6 +92,14 @@ def onnx_edit(input_model, output_model, new_input_node_names, input_shape_map, 
         # Exactly here the graph is broken
         if name in node_map.keys():
             graph.node.remove(node_map[name])
+        # Remove node where there output would match new input to avoid duplicate definitions
+        nodesToRemoveToAvoidDuplicateEntries = []
+        for n in graph.node:
+            for noutput in n.output:       
+                if (noutput == name):
+                    nodesToRemoveToAvoidDuplicateEntries.append(n)
+        for n in nodesToRemoveToAvoidDuplicateEntries:
+            graph.node.remove(n)
         if(name in input_shape_map.keys()):
             new_nv = helper.make_tensor_value_info(name, TensorProto.FLOAT, input_shape_map[name])
         else:
