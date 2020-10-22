@@ -84,9 +84,6 @@ def onnx_edit(input_model, output_model, new_input_node_names, input_shape_map, 
     # MODIFY INPUTS
     # Break the graph based on the new input node names
     [removed_names,retained_names,new_names]=split_io_list(graph.input,new_input_node_names)
-    print(removed_names)
-    print(retained_names)
-    print(new_names)
     for name in removed_names:
         if name in input_map.keys():
             graph.input.remove(input_map[name])
