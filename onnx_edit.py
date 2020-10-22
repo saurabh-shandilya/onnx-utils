@@ -84,9 +84,12 @@ def onnx_edit(input_model, output_model, new_input_node_names, input_shape_map, 
     # MODIFY INPUTS
     # Break the graph based on the new input node names
     [removed_names,retained_names,new_names]=split_io_list(graph.input,new_input_node_names)
+    print(removed_names)
+    print(retained_names)
+    print(new_names)
     for name in removed_names:
         if name in input_map.keys():
-            graph.input.remove(input_map[name])                              
+            graph.input.remove(input_map[name])
     for name in new_names:
         # If a new input name corresponds to an existing node, it implies that original node in the graph needs to be replaced with an input node
         # Exactly here the graph is broken
@@ -105,6 +108,12 @@ def onnx_edit(input_model, output_model, new_input_node_names, input_shape_map, 
         else:
             new_nv = helper.make_tensor_value_info(name, TensorProto.FLOAT, None)    
         graph.input.extend([new_nv])
+    for name in retained_names:
+        if(name in input_shape_map.keys() and name in input_map.keys()):
+            graph.input.remove(input_map[name])
+            new_nv = helper.make_tensor_value_info(name, TensorProto.FLOAT, input_shape_map[name])
+            graph.input.extend([new_nv])
+            
     node_map = createGraphMemberMap(graph.node)
     input_map = createGraphMemberMap(graph.input)    
 
@@ -120,6 +129,11 @@ def onnx_edit(input_model, output_model, new_input_node_names, input_shape_map, 
         else:
             new_nv = helper.make_tensor_value_info(name, TensorProto.FLOAT, None)
         graph.output.extend([new_nv])
+    for name in retained_names:
+        if(name in output_shape_map.keys() and name in output_map.keys()):
+            graph.output.remove(output_map[name])
+            new_nv = helper.make_tensor_value_info(name, TensorProto.FLOAT, output_shape_map[name])
+            graph.output.extend([new_nv])
     output_map = createGraphMemberMap(graph.output)      
 
     # CLEANUP NODES
