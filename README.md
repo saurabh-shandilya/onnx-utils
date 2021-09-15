@@ -23,3 +23,13 @@ optional arguments:
  
  --skipverify       skip verification of model. Useful if shapes are not
                      known
+
+# onnx-summarize
+
+usage: onnx_summarize.py [-h] input
+
+Creates a summary of operators in the input onnx file and also dumps each *loop
+body* as an onnx file and also creates summary for each such loop body. 
+
+positional arguments:
+  input       input onnx model
